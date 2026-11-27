@@ -1,0 +1,25 @@
+:root { --m: #1b2a3a; --s: #5b6775; --v: #1f5a85; --o: #c2581b; --c: #dcd9d0; --k: #b3261e; color-scheme: light dark; }
+body { margin: 0; padding: 12px 14px; font: 14px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: var(--color-text-primary, var(--m)); background: transparent; }
+header { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; align-items: baseline; margin-bottom: 8px; }
+.soluk { color: var(--color-text-secondary, var(--s)); }
+.kucuk { font-size: 12.5px; }
+.kartlar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.kart { border: 1px solid var(--color-border-primary, var(--c)); border-radius: 8px; padding: 6px 9px; }
+.kart span { display: block; font-size: 11px; color: var(--color-text-secondary, var(--s)); text-transform: uppercase; letter-spacing: 0.04em; }
+.kart b { font-size: 15px; }
+.kart.p85 { border: 2px solid var(--o); }
+.kart.p85 span { color: var(--o); }
+svg { width: 100%; height: auto; display: block; margin-top: 8px; touch-action: pan-y; }
+.izgara { stroke: rgba(127, 127, 127, 0.18); }
+.eksen { font-size: 10px; fill: var(--color-text-secondary, var(--s)); }
+.cubuk { fill: rgba(31, 90, 133, 0.22); }
+.cizgi { fill: none; stroke: var(--v); stroke-width: 2.4; }
+.isaret { stroke: var(--color-text-primary, var(--m)); stroke-dasharray: 3 3; }
+.isaret.p85 { stroke: var(--o); stroke-dasharray: none; stroke-width: 2; }
+.isaret.plan { stroke: var(--k); stroke-dasharray: none; }
+.etiket { font-size: 11px; font-weight: 700; fill: var(--color-text-primary, var(--m)); }
+.etiket.p85 { fill: var(--o); }
+.etiket.plan { fill: var(--k); }
+.imlec { stroke: #8895a3; }
+#riskli ol { margin: 4px 0 0; padding-left: 1.2rem; }
+#durum.hata { color: var(--k); }

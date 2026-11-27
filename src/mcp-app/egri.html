@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Termin Olasılığı</title>
+    <link rel="stylesheet" href="./egri.css" />
+  </head>
+  <body>
+    <header>
+      <b id="ad">Termin Olasılığı</b>
+      <span id="plan" class="soluk"></span>
+    </header>
+    <div id="kartlar" class="kartlar"></div>
+    <svg id="grafik" viewBox="0 0 640 230" role="img" aria-label="Bitiş olasılığı eğrisi"></svg>
+    <div id="bilgi" class="soluk kucuk" aria-live="polite"></div>
+    <div id="riskli" class="kucuk"></div>
+    <p id="durum" class="kucuk"></p>
+    <script type="module" src="./egri.js"></script>
+  </body>
+</html>

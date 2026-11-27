@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-mcp-app
+.git
+.github
+.env
+.env.*
+tests
+docs
+*.log

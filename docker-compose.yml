@@ -1,0 +1,24 @@
+# Tek başına çalıştırma (kendi sunucunda): cp .env.example .env && docker compose up -d --build → http://127.0.0.1:8080
+# HTTPS önündeki ters vekille (Caddy, nginx, IIS) sağlanır. ysfdurak.com kurulumu: deploy/docker-compose.ortak.yml
+name: termin-olasiligi
+services:
+  termin:
+    build: .
+    env_file: .env
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 384m
+    pids_limit: 64
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
