@@ -1,7 +1,7 @@
 # Termin Olasılığı: web arayüzü + MCP kapısı (Node, durumsuz, veri saklamaz)
 #   docker build -t termin-olasiligi .
 #   docker run -d --env-file .env -p 127.0.0.1:8080:8080 termin-olasiligi
-FROM node:22-bookworm-slim AS derleme
+FROM node:26-bookworm-slim AS derleme
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -10,7 +10,7 @@ COPY public ./public
 COPY src ./src
 RUN npm run build
 
-FROM node:22-bookworm-slim
+FROM node:26-bookworm-slim
 ENV NODE_ENV=production PORT=8080 DIST=/app/dist
 WORKDIR /app
 COPY package.json package-lock.json ./
