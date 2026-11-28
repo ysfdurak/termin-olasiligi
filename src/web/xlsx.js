@@ -105,9 +105,12 @@ function sayfaXml(sayfa) {
   const satirlar = sayfa.satirlar
     .map((r, ri) => {
       const hucre = r
-        .map((v, ci) => {
+        .map((h, ci) => {
           const ref = harf(ci) + (ri + 1);
-          const stil = ri === 0 && sayfa.baslikli !== false ? ' s="1"' : typeof v === 'number' && sayfa.yuzde?.includes(ci) ? ' s="2"' : typeof v === 'number' ? ' s="3"' : '';
+          // Hücre düz değer ya da { v, ondalik: true } olabilir. ondalik: süre gibi bir sütunda 40 de 40,0 görünsün (43,4'ün yanında).
+          // Aksi hâlde tam sayı #,##0 (10.000), ondalık #,##0.0 biçimini alır.
+          const v = h !== null && typeof h === 'object' ? h.v : h, ondalik = h !== null && typeof h === 'object' && h.ondalik;
+          const stil = ri === 0 && sayfa.baslikli !== false ? ' s="1"' : typeof v === 'number' && sayfa.yuzde?.includes(ci) ? ' s="2"' : typeof v === 'number' ? (Number.isInteger(v) && !ondalik ? ' s="4"' : ' s="3"') : '';
           if (v === '' || v === null || v === undefined) return '';
           // Metin her zaman satır içi metin olarak yazılır: hücre formül olarak yorumlanmaz (formül enjeksiyonu yok).
           return typeof v === 'number' && Number.isFinite(v) ? `<c r="${ref}"${stil}><v>${v}</v></c>` : `<c r="${ref}" t="inlineStr"${stil}><is><t xml:space="preserve">${kac(v)}</t></is></c>`;
@@ -120,7 +123,7 @@ function sayfaXml(sayfa) {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">${don}${cols ? `<cols>${cols}</cols>` : ''}<sheetData>${satirlar}</sheetData></worksheet>`;
 }
 
-/** sayfalar: [{ ad, satirlar: (string|number)[][], genislik?: number[], yuzde?: number[] }] */
+/** sayfalar: [{ ad, satirlar: (string|number|{ v: number, ondalik?: boolean })[][], genislik?: number[], yuzde?: number[] }] */
 export function xlsxYaz(sayfalar) {
   const ad = (s) => kac(String(s).replace(/[\\/?*[\]:]/g, ' ').slice(0, 31));
   const dosyalar = {
@@ -128,7 +131,7 @@ export function xlsxYaz(sayfalar) {
     '_rels/.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
     'xl/workbook.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sayfalar.map((s, i) => `<sheet name="${ad(s.ad)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('')}</sheets></workbook>`,
     'xl/_rels/workbook.xml.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sayfalar.map((_, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('')}<Relationship Id="rId${sayfalar.length + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`,
-    'xl/styles.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="0.0"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="9" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs></styleSheet>`,
+    'xl/styles.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.0"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="9" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs></styleSheet>`,
   };
   sayfalar.forEach((s, i) => (dosyalar[`xl/worksheets/sheet${i + 1}.xml`] = sayfaXml(s)));
   const zip = zipSync(Object.fromEntries(Object.entries(dosyalar).map(([k, v]) => [k, strToU8(v)])), { level: 6 });

@@ -10,7 +10,8 @@ const B = {
 export function sonucSayfalari(p, s, dil) {
   const b = B[dil] || B.tr;
   const tr = dil !== 'en';
-  const satir = (ad, gun, olas) => [ad, Math.round(gun * 10) / 10, bitisTarihi(p.baslangic, gun), olas ?? ''];
+  const gunH = (gun) => ({ v: Math.round(gun * 10) / 10, ondalik: true }); // iş günü sütunu hep bir ondalıklı
+  const satir = (ad, gun, olas) => [ad, gunH(gun), bitisTarihi(p.baslangic, gun), olas ?? ''];
   const ozet = [
     [b.olcu, b.deger, b.tarih, b.olasilik],
     [tr ? 'Proje' : 'Project', p.ad, '', ''],
@@ -21,11 +22,11 @@ export function sonucSayfalari(p, s, dil) {
     satir(tr ? 'En olası sürelerle plan' : 'Plan with most likely durations', s.deterministik),
     satir(tr ? 'Klasik PERT %85' : 'Classic PERT 85%', s.pert.p85),
   ];
-  if (p.planTarihi && s.plan) ozet.push([tr ? 'Plan tarihinin tutma olasılığı' : 'Chance of meeting the committed date', s.plan.gun, p.planTarihi, s.plan.olasilik]);
+  if (p.planTarihi && s.plan) ozet.push([tr ? 'Plan tarihinin tutma olasılığı' : 'Chance of meeting the committed date', gunH(s.plan.gun), p.planTarihi, s.plan.olasilik]);
   ozet.push([tr ? 'Tur sayısı / tohum' : 'Runs / seed', s.tur, String(s.tohum), '']);
   const kr = Object.fromEntries(s.isler.map((x) => [x.kod, x]));
   const isler = [[...SABLON_BASLIKLARI, b.kritiklik, b.duyarlilik], ...projedenSatirlar(p).map((r) => [...r, kr[r[0]]?.kritiklik ?? '', Math.round((kr[r[0]]?.duyarlilik ?? 0) * 100) / 100])];
-  const egri = [[b.deger, b.tarih, b.olasilik], ...s.egri.filter((_, i) => i % 5 === 0).map(([g, o]) => [Math.round(g * 10) / 10, bitisTarihi(p.baslangic, g), o])];
+  const egri = [[b.deger, b.tarih, b.olasilik], ...s.egri.filter((_, i) => i % 5 === 0).map(([g, o]) => [gunH(g), bitisTarihi(p.baslangic, g), o])];
   return [
     { ad: b.ozet, satirlar: ozet, genislik: [38, 16, 14, 12], yuzde: [3] },
     { ad: b.isler, satirlar: isler, genislik: [8, 40, 12, 12, 12, 12, 18, 14, 10, 14, 11, 11], yuzde: [10] },
