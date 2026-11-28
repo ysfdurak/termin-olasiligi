@@ -3,6 +3,7 @@
 name: termin-olasiligi
 services:
   termin:
+    init: true  # PID 1 olarak tini: alt süreçleri toplar (zombie birikmez), sinyalleri düzgün iletir
     build: .
     env_file: .env
     ports:
