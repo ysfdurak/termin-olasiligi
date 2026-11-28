@@ -5,6 +5,7 @@
 name: termin
 services:
   termin:
+    init: true  # PID 1 olarak tini: alt süreçleri toplar (zombie birikmez), sinyalleri düzgün iletir
     build: ..
     container_name: termin
     env_file: ../.env
