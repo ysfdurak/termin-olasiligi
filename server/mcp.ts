@@ -128,7 +128,7 @@ export function mcpIsleyici({ grafikHtml, kayit }: { grafikHtml: string | null; 
 
   function sunucuKur() {
     const s = new McpServer(
-      { name: 'termin-olasiligi', version: '0.1.0' },
+      { name: 'termin-olasiligi', version: '0.1.1' },
       {
         instructions:
           'Termin Olasılığı, projenin bitiş tarihini Monte Carlo simülasyonuyla olasılık olarak verir. Süreler iş günüdür (hafta sonu sayılmaz). ' +

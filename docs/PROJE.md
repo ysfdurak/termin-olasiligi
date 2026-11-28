@@ -254,6 +254,7 @@ sağlık ve CSP başlığını denetliyor; ilk gönderimde yeşil olduğunu gör
 
 | Katman | Dosya | Ne denetler |
 | --- | --- | --- |
+| Excel biçimi | `tests/xlsx-bicim.test.ts` (1 test) | Tam sayı `#,##0`, ondalık `#,##0.0`, yüzde; değer saf sayı |
 | Çekirdek | `tests/cekirdek.test.ts` (16 test) | Kapsam sayıları, tek tur elle hesap, tohum, senaryo, 19 bulgu türü, takvim, CSV/Pusula içe aktarma, formül enjeksiyonu, performans |
 | Sunucu + MCP | `tests/sunucu.test.ts` (7 test) | CSP ve 6 başlık, satır içi betik yok, dizin gezme (4 deneme), 405/413/415/400/403/429, 6 aracın tamamı, MCP App kaynağı |
 | Tarayıcı | `tests/e2e/gezinti.py` (16 kontrol) | Konsol/CSP hatası yok, sayılar ekranda, senaryo, hata iletisi, CSV ve .xlsx şablon gidiş-dönüş, kötü yedek reddi, kayıttaki betik çalışmıyor, İngilizce, telefonda taşma yok |
@@ -268,11 +269,23 @@ sağlık ve CSP başlığını denetliyor; ilk gönderimde yeşil olduğunu gör
 | Senaryo E=8/9/16 (iade) | %85 öne gelir | 3,9 gün erken, plan %14 → %42 | ✓ |
 | Canlıda başlıklar | CSP var | **[yayından sonra]** | — |
 
+**Windows örneklem testi (28 Kasım 2026, Excel):**
+
+| Adım | Beklenen | Gözlenen | Durum |
+| --- | --- | --- | --- |
+| Şablonu indir, Excel'de satır ekle (F Kullanıcı eğitimi 1,5 / 2 / 4), geri yükle | Yeni iş tanınır | Tanındı | ✓ |
+| "Excel (.xlsx)" sonucunu aç | Onar uyarısı yok | Yok | ✓ |
+| Tur sayısı hücresi | 10.000 | 10000,0 (her sayı `0.0` biçimindeydi) → 0.1.1'de düzeltildi, Excel'de yeniden açıldı: 10.000; iş günleri 40,0 / 43,4 | ✓ |
+
+> **Ders:** Excel'de görünüm (biçim) ile değer ayrıdır. Hücreye `10000` yazıp biçimi `0.0` verirsen Excel
+> `10000,0` gösterir; değer yine 10000'dir. Düzeltme yazıcıda: tam sayı → `#,##0` (yerleşik biçim 3),
+> ondalık → `#,##0.0`. Virgül "binlik ayraç" demektir; Türkçe Excel onu noktaya çevirir.
+> İş günü sütununda ise 40 ile 43,4 yan yana durunca tutarsız görünür; bu yüzden süre hücreleri
+> `{ v: 40, ondalik: true }` olarak yazılır ve hep `40,0` görünür. Tur sayısı gibi sayaçlar tam sayı kalır.
+
 ![Senaryo](gorseller/senaryo.png)
 
 **Burada bir test daha yapalım:**
-- Windows'ta gerçek Excel: şablonu indir, birkaç satır ekle, kaydet, geri yükle. Ayrıca "Excel (.xlsx)"
-  çıktısını aç; "onar" uyarısı çıkmamalı (dosyayı kendi yazıcımız üretiyor).
 - Pusula'dan gerçek bir dışa aktarma + üç tahmin sütunu: başlıklar tanınıyor mu?
 - Gerçek Android telefonda sonuç sayfası ve grafik (dar ekran çizimi).
 - Claude'da bağlayıcıyı ekleyip "yöntem örneği 30 gün içinde biter mi?": eğri Claude içinde açılmalı.
@@ -419,5 +432,6 @@ kritikliğine bak.
 | Tarih | Sürüm | Değişiklik |
 | --- | --- | --- |
 | 2026-11-16 | — | Kapsam dokümanı (Claude Docs) |
+| 2026-11-28 | 0.1.1 | Excel çıktısında sayı biçimi: tam sayılar binlik ayraçlı (Tur sayısı 10.000), ondalıklar `#,##0.0`; Windows Excel testi |
 | 2026-11-27 | 0.1.0 | Kullanıcı gözüyle inceleme: veri tarihi, yöneticiye tek cümle, senaryo düğmesi, Excel türü içerikten, telefon düzeni |
 | 2026-11-27 | 0.1.0 | V1: çekirdek (kapsam sayılarıyla doğrulandı), TR/EN web arayüzü, Excel/CSV/Pusula içe aktarma, 6 MCP aracı + MCP App, güvenlik temeli, ortak ölçüm, Docker ve kurulum betiği |
